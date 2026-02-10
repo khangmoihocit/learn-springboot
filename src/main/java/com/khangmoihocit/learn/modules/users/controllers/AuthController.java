@@ -71,10 +71,17 @@ public class AuthController {
         }
     }
 
+
+
     @PostMapping("/refresh-token")
-    public ResponseEntity<TokenResource> refreshToken(@Valid @RequestBody RefreshTokenRequest request){
+    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String bearerToken){
+        String refreshToken = bearerToken.substring(7);
 
+        if(!jwtService.isRefreshTokenValid(refreshToken)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new MessageResource("Refresh token không hợp lệ hoặc đã hết hạn."));
+        }
 
-        return null;
+        return ResponseEntity.ok(refreshToken);
     }
 }
