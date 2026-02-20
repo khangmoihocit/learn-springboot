@@ -64,6 +64,7 @@ public class JwtService {
                 .signWith(getSignInKey(), Jwts.SIG.HS512)
                 .compact();
 
+        //đaảm bảo mỗi user sẽ chỉ có 1 refreshtoken đc lưu db
         Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByUserId(userId);
         if(optionalRefreshToken.isPresent()){ //không có bản ghi nào
             RefreshToken refreshToken = optionalRefreshToken.get();
@@ -117,7 +118,7 @@ public class JwtService {
         try{
             Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(token);
             return true;
-        } catch (SignatureException e) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -153,7 +154,7 @@ public class JwtService {
                     .orElseThrow(()-> new RuntimeException("refreshtoken không hợp lệ"));
             final Date expire = extractAllClaims(refreshToken.getRefreshToken()).getExpiration();
 
-            return expire.before(new Date());
+            return expire.after(new Date());
         }catch (Exception ex){
             return false;
         }

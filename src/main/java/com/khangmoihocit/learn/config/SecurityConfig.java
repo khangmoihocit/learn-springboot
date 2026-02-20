@@ -21,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     JwtAuthenticationFilter jwtAuthenticationFilter;
+    final String[] ENDPOIN_POST = {"/api/v1/auth/login", "/api/v1/auth/refresh-token"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,7 +34,7 @@ public class SecurityConfig {
 //                        .requestMatchers(HttpMethod.GET, "/api/v1/users/my-profile").permitAll()
 
                         //2. Routers PUBLIC
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, ENDPOIN_POST).permitAll()
 
                         .anyRequest().authenticated()
                 )
