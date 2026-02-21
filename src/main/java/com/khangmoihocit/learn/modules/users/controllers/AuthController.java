@@ -7,6 +7,7 @@ import com.khangmoihocit.learn.modules.users.requests.BlacklistTokenRequest;
 import com.khangmoihocit.learn.modules.users.requests.LoginRequest;
 import com.khangmoihocit.learn.modules.users.requests.RefreshTokenRequest;
 import com.khangmoihocit.learn.modules.users.resources.LoginResource;
+import com.khangmoihocit.learn.modules.users.resources.RefreshTokenResource;
 import com.khangmoihocit.learn.modules.users.resources.TokenResource;
 import com.khangmoihocit.learn.modules.users.services.interfaces.BlacklistedTokenService;
 import com.khangmoihocit.learn.modules.users.services.interfaces.UserService;
@@ -71,8 +72,32 @@ public class AuthController {
         }
     }
 
+
+
     @PostMapping("/refresh-token")
-    public ResponseEntity<TokenResource> refreshToken(@Valid @RequestBody RefreshTokenRequest request){
-        return null;
+    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String bearerToken){
+        String refreshToken = bearerToken.substring(7);
+
+        try{
+            if(!jwtService.isRefreshTokenValid(refreshToken)){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new MessageResource("Refresh token không hợp lệ hoặc đã hết hạn."));
+            }
+        }catch (RuntimeException ex){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new MessageResource(ex.getMessage()));
+        }
+
+
+        Long userId = Long.valueOf(jwtService.extractUsername(refreshToken));
+        String email = jwtService.getEmailFromJwt(refreshToken);
+
+        String newToken = jwtService.generateToken(userId, email);
+        String newRefreshToken = jwtService.generateRefreshToken(userId, email);
+
+        return ResponseEntity.ok(RefreshTokenResource.builder()
+                .token(newToken)
+                .refreshToken(newRefreshToken)
+                .build());
     }
 }

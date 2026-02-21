@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
@@ -62,12 +63,23 @@ public class JwtService {
                 .expiration(expiryDate)
                 .signWith(getSignInKey(), Jwts.SIG.HS512)
                 .compact();
-        RefreshToken refreshToken = RefreshToken.builder()
-                .refreshToken(strRefreshToken)
-                .userId(userId)
-                .expiryDate(expiryDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
-                .build();
-        refreshTokenRepository.save(refreshToken);
+
+        //đaảm bảo mỗi user sẽ chỉ có 1 refreshtoken đc lưu db
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByUserId(userId);
+        if(optionalRefreshToken.isPresent()){ //không có bản ghi nào
+            RefreshToken refreshToken = optionalRefreshToken.get();
+            refreshToken.setRefreshToken(strRefreshToken);
+            refreshToken.setExpiryDate(expiryDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+            refreshTokenRepository.save(refreshToken);
+        }else{
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .refreshToken(strRefreshToken)
+                    .userId(userId)
+                    .expiryDate(expiryDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
+                    .build();
+            refreshTokenRepository.save(refreshToken);
+        }
+
         return strRefreshToken;
     }
 
@@ -106,7 +118,7 @@ public class JwtService {
         try{
             Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(token);
             return true;
-        } catch (SignatureException e) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -114,6 +126,9 @@ public class JwtService {
     public boolean isTokenExpired(String token) {
         try {
             final Date expiration = extractClaims(token, Claims::getExpiration);
+            if (expiration == null) {
+                return true;
+            }
             return expiration.before(new Date());
         } catch (ExpiredJwtException e) {
             return true;
@@ -139,7 +154,7 @@ public class JwtService {
                     .orElseThrow(()-> new RuntimeException("refreshtoken không hợp lệ"));
             final Date expire = extractAllClaims(refreshToken.getRefreshToken()).getExpiration();
 
-            return expire.before(new Date());
+            return expire.after(new Date());
         }catch (Exception ex){
             return false;
         }
