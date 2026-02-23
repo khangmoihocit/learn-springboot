@@ -19,7 +19,7 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "user_id")
     Long userId;
 
     @Column(name = "refresh_token", nullable = false, unique = true)
@@ -31,6 +31,10 @@ public class RefreshToken {
     LocalDateTime createAt;
     @Column(name = "update_at")
     LocalDateTime updateAt;
+
+    @OneToOne
+    @JoinColumn(name = "user_refresh", referencedColumnName = "id")
+    User user;
 
     @PrePersist
     protected void onCreated(){

@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
@@ -146,15 +147,13 @@ public class JwtService {
     //false: token het han han
     public boolean isRefreshTokenValid(String token){
         try{
-            Jwts.parser()
-                    .verifyWith(getSignInKey())
-                    .build()
-                    .parseSignedClaims(token);
             RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(token)
                     .orElseThrow(()-> new RuntimeException("refreshtoken không hợp lệ"));
-            final Date expire = extractAllClaims(refreshToken.getRefreshToken()).getExpiration();
 
-            return expire.after(new Date());
+            LocalDateTime experationLocalDateTime = refreshToken.getExpiryDate();
+            Date experationDate = Date.from(experationLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+            return experationDate.after(new Date());
         }catch (Exception ex){
             return false;
         }

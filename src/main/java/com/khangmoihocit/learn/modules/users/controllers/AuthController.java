@@ -3,6 +3,7 @@ package com.khangmoihocit.learn.modules.users.controllers;
 import com.khangmoihocit.learn.Resources.ErrorResource;
 import com.khangmoihocit.learn.Resources.MessageResource;
 import com.khangmoihocit.learn.modules.users.entities.RefreshToken;
+import com.khangmoihocit.learn.modules.users.repositories.RefreshTokenRepository;
 import com.khangmoihocit.learn.modules.users.requests.BlacklistTokenRequest;
 import com.khangmoihocit.learn.modules.users.requests.LoginRequest;
 import com.khangmoihocit.learn.modules.users.requests.RefreshTokenRequest;
@@ -25,6 +26,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.Optional;
 
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -35,6 +37,7 @@ public class AuthController {
     UserService userService;
     BlacklistedTokenService blacklistedTokenService;
     JwtService jwtService;
+    RefreshTokenRepository refreshTokenRepository;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
@@ -75,8 +78,8 @@ public class AuthController {
 
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String bearerToken){
-        String refreshToken = bearerToken.substring(7);
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request){
+        String refreshToken = request.getToken();
 
         try{
             if(!jwtService.isRefreshTokenValid(refreshToken)){
@@ -88,16 +91,20 @@ public class AuthController {
                     .body(new MessageResource(ex.getMessage()));
         }
 
+        Optional<RefreshToken> dbRefreshTokenOptional = refreshTokenRepository.findByRefreshToken(refreshToken);
+        if(dbRefreshTokenOptional.isPresent()){
+            RefreshToken dbRefreshToken = dbRefreshTokenOptional.get();
+            Long userId = dbRefreshToken.getUserId();
+            String email = dbRefreshToken.getUser().getEmail();
 
-        Long userId = Long.valueOf(jwtService.extractUsername(refreshToken));
-        String email = jwtService.getEmailFromJwt(refreshToken);
+            String newToken = jwtService.generateToken(userId, email);
+            String newRefreshToken = jwtService.generateRefreshToken(userId, email);
 
-        String newToken = jwtService.generateToken(userId, email);
-        String newRefreshToken = jwtService.generateRefreshToken(userId, email);
-
-        return ResponseEntity.ok(RefreshTokenResource.builder()
-                .token(newToken)
-                .refreshToken(newRefreshToken)
-                .build());
+            return ResponseEntity.ok(RefreshTokenResource.builder()
+                    .token(newToken)
+                    .refreshToken(newRefreshToken)
+                    .build());
+        }
+        return ResponseEntity.internalServerError().body(new MessageResource("Network Error!"));
     }
 }
