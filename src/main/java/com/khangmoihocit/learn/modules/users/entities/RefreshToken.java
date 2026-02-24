@@ -32,8 +32,8 @@ public class RefreshToken {
     @Column(name = "update_at")
     LocalDateTime updateAt;
 
-    @OneToOne
-    @JoinColumn(name = "user_refresh", referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
     User user;
 
     @PrePersist
