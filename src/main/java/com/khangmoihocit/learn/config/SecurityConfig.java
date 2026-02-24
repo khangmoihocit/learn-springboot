@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     JwtAuthenticationFilter jwtAuthenticationFilter;
-    final String[] ENDPOIN_POST = {"/api/v1/auth/login", "/api/v1/auth/refresh-token"};
+    final String[] ENDPOIN_POST = {"/api/v1/auth/login", "/api/v1/auth/refresh-token", "/api/v1/auth/blacklist-token"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
