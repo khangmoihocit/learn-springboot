@@ -1,5 +1,6 @@
 package com.khangmoihocit.learn.modules.users.controllers;
 
+import com.khangmoihocit.learn.Resources.ApiResource;
 import com.khangmoihocit.learn.Resources.SuccessResource;
 import com.khangmoihocit.learn.modules.users.entities.User;
 import com.khangmoihocit.learn.modules.users.repositories.UserRepository;
@@ -38,10 +39,8 @@ public class UserController {
                 .phone(user.getPhone())
                 .build();
 
-        SuccessResource<UserResource> response = SuccessResource.<UserResource>builder()
-                .message("SUCCESS")
-                .data(userResource)
-                .build();
+        ApiResource<UserResource> response = ApiResource.ok(userResource, "SUCCESS");
+
         return ResponseEntity.ok(response);
     }
 }

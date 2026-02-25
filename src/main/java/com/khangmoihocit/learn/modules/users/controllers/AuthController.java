@@ -1,5 +1,6 @@
 package com.khangmoihocit.learn.modules.users.controllers;
 
+import com.khangmoihocit.learn.Resources.ApiResource;
 import com.khangmoihocit.learn.Resources.ErrorResource;
 import com.khangmoihocit.learn.Resources.MessageResource;
 import com.khangmoihocit.learn.modules.users.entities.RefreshToken;
@@ -44,10 +45,11 @@ public class AuthController {
         Object result = userService.authenticate(request);
 
         if(result instanceof LoginResource loginResource){
-            return ResponseEntity.ok(loginResource);
+            ApiResource<LoginResource> response = ApiResource.ok(loginResource, "SUCCESS");
+            return ResponseEntity.ok(response);
         }
 
-        if(result instanceof ErrorResource errorResource){
+        if(result instanceof ApiResource errorResource){
             return ResponseEntity.unprocessableEntity().body(errorResource);
         }
 
