@@ -22,7 +22,7 @@ public class BlacklistedToken {
     @Column(nullable = false)
     Long userId;
 
-    @Column(name = "token", nullable = false, unique = true)
+    @Column(name = "token", nullable = false, unique = true, columnDefinition = "TEXT")
     String token;
 
     @Column(name = "expiry_date", nullable = false)

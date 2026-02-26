@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         //nếu request không có token
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            log.error("Không có token");
+            log.info("request Không có token");
             filterChain.doFilter(request, response); //tiếp tục check ở filter chain
             return;
         }

@@ -1,5 +1,6 @@
 package com.khangmoihocit.learn.modules.users.services.impl;
 
+import com.khangmoihocit.learn.Resources.ApiResource;
 import com.khangmoihocit.learn.Resources.ErrorResource;
 import com.khangmoihocit.learn.modules.users.entities.User;
 import com.khangmoihocit.learn.modules.users.repositories.UserRepository;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +37,9 @@ public class UserServiceImpl extends BaseService implements UserService {
     public Object authenticate(LoginRequest loginRequest) {
         try {
             User user = userRepository.findByEmail(loginRequest.getEmail())
-                    .orElseThrow(() -> new BadRequestException("email hoặc mật khẩu không chính xác."));
+                    .orElseThrow(() -> new BadCredentialsException("email hoặc mật khẩu không chính xác."));
             if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                throw new BadRequestException("email hoặc mật khẩu không chính xác.");
+                throw new BadCredentialsException("email hoặc mật khẩu không chính xác.");
             }
 
             String token = jwtService.generateToken(user.getId(), user.getEmail());
@@ -53,15 +56,8 @@ public class UserServiceImpl extends BaseService implements UserService {
                     .user(userResource)
                     .build();
 
-        } catch (BadRequestException ex) {
-            log.error("Lỗi xác thực: {}", ex.getMessage());
-
-            Map<String, String> errors = new HashMap<>();
-            errors.put("message", ex.getMessage());
-            return ErrorResource.builder()
-                    .message("có vấn đề xẩy ra trong quá trình xác thực")
-                    .errors(errors)
-                    .build();
+        } catch (BadCredentialsException ex) {
+            return ApiResource.error("AUTH_ERROR", ex.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
 

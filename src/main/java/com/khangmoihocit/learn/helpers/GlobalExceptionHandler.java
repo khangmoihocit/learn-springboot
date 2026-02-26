@@ -1,7 +1,9 @@
 package com.khangmoihocit.learn.helpers;
 
 import com.khangmoihocit.learn.Resources.ErrorResource;
+import com.khangmoihocit.learn.Resources.MessageResource;
 import com.khangmoihocit.learn.modules.users.resources.LoginResource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -14,9 +16,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(value = Exception.class)
+    ResponseEntity<MessageResource> handlingRuntimeException(RuntimeException exception) {
+        log.error("Exception: ", exception);
+        MessageResource messageResource = MessageResource.builder().message("Uncategories error").build();
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(messageResource);
+    }
+
     //bắt lỗi từ @Valid
+    //return 1 list error
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<Object> handleValidException(MethodArgumentNotValidException exception){
         Map<String, String> errors = new HashMap<>();
