@@ -71,9 +71,21 @@ public class AuthController {
         try{
             String token = bearerToken.substring(7);
             Object result = blacklistedTokenService.create(new BlacklistTokenRequest(token));
+
+            ApiResource<Void> respond = ApiResource.<Void>builder()
+                    .success(true)
+                    .message("Đăng xuất thành công!")
+                    .status(HttpStatus.OK)
+                    .build();
+
             return ResponseEntity.ok(result);
         }catch (Exception ex){
-            return ResponseEntity.internalServerError().body(new MessageResource("Network Error!"));
+            ApiResource<Void> respond = ApiResource.<Void>builder()
+                    .success(false)
+                    .message("Network Error!")
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+            return ResponseEntity.internalServerError().body(respond);
         }
     }
 
