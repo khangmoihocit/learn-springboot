@@ -37,11 +37,15 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(Long userId, String email) {
+    public String generateToken(Long userId, String email, Long expirationTime) {
         Date now = new Date();
-        log.info(String.valueOf(jwtConfig.getExpirationTime()));
-        Date expiryDate = new Date(now.getTime() + jwtConfig.getExpirationTime());
-        log.info(expiryDate.toString());
+
+        if(expirationTime == null){
+            expirationTime = jwtConfig.getExpirationTime();
+        }
+
+        Date expiryDate = new Date(now.getTime() + expirationTime);
+
         return Jwts.builder()
                 .subject(String.valueOf(userId))
                 .claim("email", email)
