@@ -19,7 +19,7 @@ import java.util.Map;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = Exception.class)
+    @ExceptionHandler(value = RuntimeException.class)
     ResponseEntity<MessageResource> handlingRuntimeException(RuntimeException exception) {
         log.error("Exception: ", exception);
         MessageResource messageResource = MessageResource.builder().message("Uncategories error").build();

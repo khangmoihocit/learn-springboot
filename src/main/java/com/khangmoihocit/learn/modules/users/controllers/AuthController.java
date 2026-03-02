@@ -78,7 +78,7 @@ public class AuthController {
                     .status(HttpStatus.OK)
                     .build();
 
-            return ResponseEntity.ok(result);
+            return ResponseEntity.ok(respond);
         }catch (Exception ex){
             ApiResource<Void> respond = ApiResource.<Void>builder()
                     .success(false)
