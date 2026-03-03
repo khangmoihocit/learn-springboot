@@ -20,6 +20,10 @@ public class JwtConfig {
     private long expirationTimeRefreshToken;
 
     @Getter
+    @Value("${jwt.defaultExpiration}")
+    private long defaultExpiration;
+
+    @Getter
     @Value("${jwt.issuer}")
     private String issuer;
 

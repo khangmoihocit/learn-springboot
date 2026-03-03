@@ -71,9 +71,21 @@ public class AuthController {
         try{
             String token = bearerToken.substring(7);
             Object result = blacklistedTokenService.create(new BlacklistTokenRequest(token));
-            return ResponseEntity.ok(result);
+
+            ApiResource<Void> respond = ApiResource.<Void>builder()
+                    .success(true)
+                    .message("Đăng xuất thành công!")
+                    .status(HttpStatus.OK)
+                    .build();
+
+            return ResponseEntity.ok(respond);
         }catch (Exception ex){
-            return ResponseEntity.internalServerError().body(new MessageResource("Network Error!"));
+            ApiResource<Void> respond = ApiResource.<Void>builder()
+                    .success(false)
+                    .message("Network Error!")
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+            return ResponseEntity.internalServerError().body(respond);
         }
     }
 
@@ -97,7 +109,7 @@ public class AuthController {
             Long userId = dbRefreshToken.getUserId();
             String email = dbRefreshToken.getUser().getEmail();
 
-            String newToken = jwtService.generateToken(userId, email);
+            String newToken = jwtService.generateToken(userId, email, null);
             String newRefreshToken = jwtService.generateRefreshToken(userId, email);
 
             return ResponseEntity.ok(RefreshTokenResource.builder()

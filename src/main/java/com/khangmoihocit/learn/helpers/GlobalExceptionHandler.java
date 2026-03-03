@@ -1,5 +1,6 @@
 package com.khangmoihocit.learn.helpers;
 
+import com.khangmoihocit.learn.Resources.ApiResource;
 import com.khangmoihocit.learn.Resources.ErrorResource;
 import com.khangmoihocit.learn.Resources.MessageResource;
 import com.khangmoihocit.learn.modules.users.resources.LoginResource;
@@ -19,12 +20,19 @@ import java.util.Map;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = Exception.class)
+    @ExceptionHandler(value = RuntimeException.class)
     ResponseEntity<MessageResource> handlingRuntimeException(RuntimeException exception) {
         log.error("Exception: ", exception);
         MessageResource messageResource = MessageResource.builder().message("Uncategories error").build();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(messageResource);
+    }
+
+    @ExceptionHandler(value = AppException.class)
+    ResponseEntity<ApiResource> handlingAppException(AppException exception){
+        ApiResource response = ApiResource.error("ERROR", exception.getMessage(), HttpStatus.BAD_REQUEST);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     //bắt lỗi từ @Valid

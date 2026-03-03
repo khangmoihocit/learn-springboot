@@ -11,10 +11,13 @@ import com.khangmoihocit.learn.modules.users.resources.UserResource;
 import com.khangmoihocit.learn.modules.users.services.interfaces.UserService;
 import com.khangmoihocit.learn.services.JwtService;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +36,10 @@ public class UserServiceImpl extends BaseService implements UserService {
     JwtService jwtService;
     PasswordEncoder passwordEncoder;
 
+    @Value("${jwt.defaultExpiration}")
+    @NonFinal
+    long defaultExpiration;
+
     @Override
     public Object authenticate(LoginRequest loginRequest) {
         try {
@@ -42,7 +49,7 @@ public class UserServiceImpl extends BaseService implements UserService {
                 throw new BadCredentialsException("email hoặc mật khẩu không chính xác.");
             }
 
-            String token = jwtService.generateToken(user.getId(), user.getEmail());
+            String token = jwtService.generateToken(user.getId(), user.getEmail(), defaultExpiration);
             String refreshToken = jwtService.generateRefreshToken(user.getId(), user.getEmail());
             UserResource userResource = UserResource.builder()
                     .id(user.getId())

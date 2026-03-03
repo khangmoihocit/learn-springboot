@@ -57,8 +57,7 @@ public class ApiResource<T> {
         }
 
         public Builder<T> data(T data){
-            this.resource.data = data
-                  ;
+            this.resource.data = data;
             return this;
         }
 

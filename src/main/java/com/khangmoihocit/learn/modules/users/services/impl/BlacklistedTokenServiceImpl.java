@@ -1,5 +1,6 @@
 package com.khangmoihocit.learn.modules.users.services.impl;
 
+import com.khangmoihocit.learn.Resources.ApiResource;
 import com.khangmoihocit.learn.Resources.ErrorResource;
 import com.khangmoihocit.learn.Resources.MessageResource;
 import com.khangmoihocit.learn.modules.users.entities.BlacklistedToken;
@@ -12,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
@@ -31,7 +33,7 @@ public class BlacklistedTokenServiceImpl implements BlacklistedTokenService {
     public Object create(BlacklistTokenRequest request){
         try{
             if(blacklistedTokenRepository.existsByToken(request.getToken())){
-                return new MessageResource("Token đã tồn tại trong blacklist");
+                return ApiResource.error("BLACK_LIST_TOKEN", "token đã tồn tại trong black list", HttpStatus.NOT_FOUND);
             }
 
             Claims claims = jwtService.extractAllClaims(request.getToken());
