@@ -1,6 +1,8 @@
 package com.khangmoihocit.learn.modules.users.controllers;
 
+import com.khangmoihocit.learn.Resources.ApiResource;
 import com.khangmoihocit.learn.modules.users.entities.User;
+import com.khangmoihocit.learn.modules.users.entities.UserCatalogue;
 import com.khangmoihocit.learn.modules.users.requests.UserCatalogue.StoreRequest;
 import com.khangmoihocit.learn.modules.users.resources.UserCatalogueResource;
 import com.khangmoihocit.learn.modules.users.services.interfaces.UserCatalogueService;
@@ -29,7 +31,8 @@ public class UserCatalogueController {
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody StoreRequest request){
-
-        return ResponseEntity.ok("");
+        UserCatalogueResource userCatalogue = userCatalogueService.save(request);
+        ApiResource<UserCatalogueResource> respond = ApiResource.ok(userCatalogue, "Tạo nhóm thành viên thành công");
+        return ResponseEntity.ok(respond);
     }
 }
