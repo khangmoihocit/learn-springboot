@@ -11,7 +11,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -51,6 +54,11 @@ public class UserCatalogueServiceImpl extends BaseService implements UserCatalog
                 .publish(userCatalogue.getPublish().toString())
                 .build();
         return respond;
+    }
+
+    @Override
+    public Page<UserCatalogueResource> panigate(Map<String, String[]> parameters) {
+        return null;
     }
 
 

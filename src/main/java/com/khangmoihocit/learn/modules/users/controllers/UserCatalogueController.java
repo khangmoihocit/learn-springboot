@@ -7,6 +7,7 @@ import com.khangmoihocit.learn.modules.users.requests.UserCatalogue.StoreRequest
 import com.khangmoihocit.learn.modules.users.resources.UserCatalogueResource;
 import com.khangmoihocit.learn.modules.users.services.interfaces.UserCatalogueService;
 import com.khangmoihocit.learn.modules.users.services.interfaces.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -39,5 +41,12 @@ public class UserCatalogueController {
                                               @PathVariable(name = "id") Long id){
 
         return ResponseEntity.ok(ApiResource.ok(userCatalogueService.update(request, id), "cập nhật thành công"));
+    }
+
+    @GetMapping("/find-all")
+    public ResponseEntity<?> findAll(HttpServletRequest request){
+        Map<String, String[]> parameters = request.getParameterMap();
+
+        return null;
     }
 }
