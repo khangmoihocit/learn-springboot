@@ -1,5 +1,6 @@
 package com.khangmoihocit.learn.modules.users.services.impl;
 
+import com.khangmoihocit.learn.helpers.AppException;
 import com.khangmoihocit.learn.modules.users.entities.UserCatalogue;
 import com.khangmoihocit.learn.modules.users.repositories.UserCatalogueRepository;
 import com.khangmoihocit.learn.modules.users.requests.UserCatalogue.StoreRequest;
@@ -34,4 +35,23 @@ public class UserCatalogueServiceImpl extends BaseService implements UserCatalog
 
         return respond;
     }
+
+    @Override
+    public UserCatalogueResource update(StoreRequest request, Long id) {
+        UserCatalogue userCatalogue = userCatalogueRepository.findById(id)
+                .orElseThrow(()-> new AppException("Không tìm thấy user catalogue"));
+
+        userCatalogue.setName(request.getName());
+        userCatalogue.setPublish(request.getPublish());
+        userCatalogue = userCatalogueRepository.save(userCatalogue);
+
+        UserCatalogueResource respond = UserCatalogueResource.builder()
+                .id(userCatalogue.getId())
+                .name(userCatalogue.getName())
+                .publish(userCatalogue.getPublish().toString())
+                .build();
+        return respond;
+    }
+
+
 }

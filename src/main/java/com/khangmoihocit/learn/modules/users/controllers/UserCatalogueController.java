@@ -12,12 +12,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import org.apache.catalina.Store;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,5 +32,12 @@ public class UserCatalogueController {
         UserCatalogueResource userCatalogue = userCatalogueService.save(request);
         ApiResource<UserCatalogueResource> respond = ApiResource.ok(userCatalogue, "Tạo nhóm thành viên thành công");
         return ResponseEntity.ok(respond);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResource> update(@Valid @RequestBody StoreRequest request,
+                                              @PathVariable(name = "id") Long id){
+
+        return ResponseEntity.ok(ApiResource.ok(userCatalogueService.update(request, id), "cập nhật thành công"));
     }
 }

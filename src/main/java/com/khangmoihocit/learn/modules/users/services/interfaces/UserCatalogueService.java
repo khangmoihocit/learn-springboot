@@ -5,4 +5,5 @@ import com.khangmoihocit.learn.modules.users.resources.UserCatalogueResource;
 
 public interface UserCatalogueService {
     UserCatalogueResource save(StoreRequest request);
+    UserCatalogueResource update(StoreRequest request, Long id);
 }
