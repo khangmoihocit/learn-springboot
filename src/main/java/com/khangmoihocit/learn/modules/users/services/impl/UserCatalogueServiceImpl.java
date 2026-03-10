@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -57,7 +58,11 @@ public class UserCatalogueServiceImpl extends BaseService implements UserCatalog
     }
 
     @Override
-    public Page<UserCatalogueResource> panigate(Map<String, String[]> parameters) {
+    public Page<UserCatalogue> panigate(Map<String, String[]> parameters) {
+        int page = parameters.containsKey("page") ? Integer.parseInt(parameters.get("page")[0]) : 1;
+        int perpage = parameters.containsKey("perpage") ? Integer.parseInt(parameters.get("perpage")[0]) : 20;
+        Sort sort = parameters.containsKey("sort") ?
+
         return null;
     }
 

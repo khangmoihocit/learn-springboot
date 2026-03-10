@@ -5,6 +5,7 @@ import com.khangmoihocit.learn.modules.users.entities.User;
 import com.khangmoihocit.learn.modules.users.entities.UserCatalogue;
 import com.khangmoihocit.learn.modules.users.requests.UserCatalogue.StoreRequest;
 import com.khangmoihocit.learn.modules.users.resources.UserCatalogueResource;
+import com.khangmoihocit.learn.modules.users.resources.UserResource;
 import com.khangmoihocit.learn.modules.users.services.interfaces.UserCatalogueService;
 import com.khangmoihocit.learn.modules.users.services.interfaces.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.apache.catalina.Store;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +48,17 @@ public class UserCatalogueController {
     @GetMapping("/find-all")
     public ResponseEntity<?> findAll(HttpServletRequest request){
         Map<String, String[]> parameters = request.getParameterMap();
+        Page<UserCatalogue> userCatalogues = userCatalogueService.panigate(parameters);
+        Page<UserCatalogueResource> userCatalogueResources = userCatalogues.map(userCatalogue -> {
+           return UserCatalogueResource.builder()
+                   .id(userCatalogue.getId())
+                   .name(userCatalogue.getName())
+                   .publish(userCatalogue.getPublish().toString())
+                   .build();
+        });
 
-        return null;
+        ApiResource<Page<UserCatalogueResource>> response = ApiResource.ok(userCatalogueResources, "SUCCESS")
+
+        return ResponseEntity.ok(response);
     }
 }

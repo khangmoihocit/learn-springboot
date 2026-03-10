@@ -10,5 +10,5 @@ import java.util.Map;
 public interface UserCatalogueService {
     UserCatalogueResource save(StoreRequest request);
     UserCatalogueResource update(StoreRequest request, Long id);
-    Page<UserCatalogueResource> panigate(Map<String, String[]> parameters);
+    Page<UserCatalogue> panigate(Map<String, String[]> parameters);
 }
