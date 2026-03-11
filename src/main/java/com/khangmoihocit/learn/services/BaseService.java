@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class BaseService {
 
-    //sortParam = "field, sortDirection"
+    //sortParam = "field,sortDirection"
     protected Sort createSort(String sortParam){
         if(sortParam == null || sortParam.isEmpty()){
             return Sort.by(Sort.Order.by("id"));

@@ -57,7 +57,7 @@ public class UserCatalogueController {
                    .build();
         });
 
-        ApiResource<Page<UserCatalogueResource>> response = ApiResource.ok(userCatalogueResources, "SUCCESS")
+        ApiResource<Page<UserCatalogueResource>> response = ApiResource.ok(userCatalogueResources, "SUCCESS");
 
         return ResponseEntity.ok(response);
     }

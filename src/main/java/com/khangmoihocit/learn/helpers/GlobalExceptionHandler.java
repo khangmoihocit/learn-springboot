@@ -4,7 +4,9 @@ import com.khangmoihocit.learn.Resources.ApiResource;
 import com.khangmoihocit.learn.Resources.ErrorResource;
 import com.khangmoihocit.learn.Resources.MessageResource;
 import com.khangmoihocit.learn.modules.users.resources.LoginResource;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.UnexpectedTypeException;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -24,11 +26,17 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = RuntimeException.class)
-    ResponseEntity<MessageResource> handlingRuntimeException(RuntimeException exception) {
+    ResponseEntity<?> handlingRuntimeException(RuntimeException exception, @NotNull HttpServletRequest request) {
         log.error("Exception: ", exception);
-        MessageResource messageResource = MessageResource.builder().message("Uncategories error").build();
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(messageResource);
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("Timestamp", System.currentTimeMillis());
+        errorResponse.put("status",  HttpStatus.INTERNAL_SERVER_ERROR);
+        errorResponse.put("error", "Network Error!");
+        errorResponse.put("message", exception.getMessage());
+        errorResponse.put("path", request.getRequestURL());
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     @ExceptionHandler(value = AppException.class)

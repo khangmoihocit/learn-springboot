@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +45,7 @@ public class UserCatalogueServiceImpl extends BaseService implements UserCatalog
     @Override
     public UserCatalogueResource update(StoreRequest request, Long id) {
         UserCatalogue userCatalogue = userCatalogueRepository.findById(id)
-                .orElseThrow(()-> new AppException("Không tìm thấy user catalogue"));
+                .orElseThrow(() -> new AppException("Không tìm thấy user catalogue"));
 
         userCatalogue.setName(request.getName());
         userCatalogue.setPublish(request.getPublish());
@@ -61,9 +63,12 @@ public class UserCatalogueServiceImpl extends BaseService implements UserCatalog
     public Page<UserCatalogue> panigate(Map<String, String[]> parameters) {
         int page = parameters.containsKey("page") ? Integer.parseInt(parameters.get("page")[0]) : 1;
         int perpage = parameters.containsKey("perpage") ? Integer.parseInt(parameters.get("perpage")[0]) : 20;
-        Sort sort = parameters.containsKey("sort") ?
+        String sortParam = parameters.containsKey("sort") ? parameters.get("sort")[0] : null;
 
-        return null;
+        Sort sort = createSort(sortParam);
+        Pageable pageable = PageRequest.of(page - 1, perpage, sort);
+
+        return userCatalogueRepository.findAll(pageable);
     }
 
 
