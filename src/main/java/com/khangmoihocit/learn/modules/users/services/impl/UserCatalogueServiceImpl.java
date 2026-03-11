@@ -1,6 +1,7 @@
 package com.khangmoihocit.learn.modules.users.services.impl;
 
 import com.khangmoihocit.learn.helpers.AppException;
+import com.khangmoihocit.learn.helpers.FilterParameter;
 import com.khangmoihocit.learn.modules.users.entities.UserCatalogue;
 import com.khangmoihocit.learn.modules.users.repositories.UserCatalogueRepository;
 import com.khangmoihocit.learn.modules.users.requests.UserCatalogue.StoreRequest;
@@ -11,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.internal.util.StringHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -64,8 +66,16 @@ public class UserCatalogueServiceImpl extends BaseService implements UserCatalog
         int page = parameters.containsKey("page") ? Integer.parseInt(parameters.get("page")[0]) : 1;
         int perpage = parameters.containsKey("perpage") ? Integer.parseInt(parameters.get("perpage")[0]) : 20;
         String sortParam = parameters.containsKey("sort") ? parameters.get("sort")[0] : null;
-
         Sort sort = createSort(sortParam);
+
+        String keyword = FilterParameter.extractKeyword(parameters);
+        Map<String, String> filterSimple = FilterParameter.filterSimple(parameters);
+        Map<String, Map<String, String>> filterComplex = FilterParameter.filterComplex(parameters);
+
+        log.info("keyword: " + keyword);
+        log.info("filter simple: {}", filterSimple);
+        log.info("filter complex: {}", filterComplex);
+
         Pageable pageable = PageRequest.of(page - 1, perpage, sort);
 
         return userCatalogueRepository.findAll(pageable);
